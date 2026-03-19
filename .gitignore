@@ -1,0 +1,6 @@
+# Ignore compiled executables
+fuzzer
+*.exe
+
+# Ignore binary files
+mutated.bin
