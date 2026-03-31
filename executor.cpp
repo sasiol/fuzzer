@@ -1,5 +1,15 @@
-//run target
+#include <cstdlib>
+#include <iostream>
 
-//pass input
+bool runTarget(const std::string& inputFile) {
+    std::string command = "./tidy " + inputFile;
 
-//checj exit code
+    int result = system(command.c_str());
+
+    if (result != 0) {
+        std::cout << "Crash detected!\n";
+        return true;
+    }
+
+    return false;
+}

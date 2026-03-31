@@ -4,3 +4,6 @@ fuzzer
 
 # Ignore binary files
 mutated.bin
+
+#ignore target program
+tidy

@@ -1,5 +1,6 @@
 //store file to memory
 //flip, insert delete bytes
+#include "mutator.h"
 
 #include <iostream>
 #include <fstream>
@@ -43,16 +44,3 @@ void writeFile(const std::string& filename, const std::vector<unsigned char>& da
     file.write((char*)data.data(), data.size());
 }
 
-int main() {
-    srand(time(0)); // seed randomness
-
-    auto data = readFile("seed/seed.txt");
-
-    mutate(data);
-
-    writeFile("mutated.bin", data);
-
-    std::cout << "Mutation done\n";
-
-    return 0;
-}
