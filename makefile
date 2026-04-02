@@ -2,7 +2,9 @@
 CXX = g++
 
 # Compiler flag
-CXXFLAGS = -std=c++17 -Wall
+CXXFLAGS = -std=c++17 -Wall -g  #-wall (warnings) -g (debugging) 
+#sanitize needed later?
+
 
 # Target executable
 TARGET = fuzzer
