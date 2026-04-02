@@ -2,8 +2,14 @@
 fuzzer
 *.exe
 
-# Ignore binary files
+# Object files
+*.o
+
+# muatated output
 mutated.bin
+
+# Crash outputs
+crashes/*
 
 #ignore target program
 tidy

@@ -38,7 +38,7 @@ void mutate(std::vector<unsigned char>& data) {
     }
 }
 
-// Save mutated file
+// Save  file
 void writeFile(const std::string& filename, const std::vector<unsigned char>& data) {
     std::ofstream file(filename, std::ios::binary);
     file.write((char*)data.data(), data.size());

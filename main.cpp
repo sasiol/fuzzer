@@ -8,6 +8,8 @@
 #include <ctime>
 
 int main() {
+    int crashCount = 0;
+
     srand(time(0)); // seed randomness
 
     while (true) {
@@ -24,20 +26,20 @@ int main() {
 
         if (crashed) {
             std::cout << "found crashing input \n";
+
+            //save results
+            std::string crashFile = "crashes/crash_" + std::to_string(crashCount) + ".bin";
+
+            writeFile(crashFile, data);
+
+            crashCount++;
+
             break;
         }
 
         std::cout << "Mutation done\n";
 
-    
 
-    //run target
-
-
-    //detect crash
-
-
-    //save results
     }
 
     return 0;
