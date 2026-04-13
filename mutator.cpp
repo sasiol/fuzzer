@@ -8,25 +8,9 @@
 #include <cstdlib>
 #include <ctime>
 
-// Read file into memory
-std::vector<unsigned char> readFile(const std::string& filename) {
-    std::ifstream file(filename, std::ios::binary);
 
-    if (!file) {
-        std::cerr << "Error opening file\n";
-        exit(1);
-    }
-
-    //Read all bytes into vector
-    std::vector<unsigned char> data(
-        (std::istreambuf_iterator<char>(file)),
-        std::istreambuf_iterator<char>()
-    );
-
-    return data;
-}
-
-// Mutate the data (flip random bytes)
+// Mutate the data (flip random bytes)   
+// todo: deterministic mode? (examp afl)
 void mutate(std::vector<unsigned char>& data) {
     if (data.empty()) return;
 
@@ -37,6 +21,7 @@ void mutate(std::vector<unsigned char>& data) {
 
         int index = rand() % data.size();   // pick random position
 
+        //to add : interesting values, other flips?
         switch(x){
             case 0: //flip bit
                 data[index] ^= (1 << (rand()% 8));

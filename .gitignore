@@ -5,6 +5,9 @@ fuzzer
 # Object files
 *.o
 
+# seed files
+seed/*
+
 # muatated output
 mutated.bin
 

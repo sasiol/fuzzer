@@ -1,5 +1,6 @@
 #include "mutator.h"
 #include "executor.h"
+#include "corpus.h"
 
 #include <iostream>
 #include <fstream>
@@ -10,12 +11,14 @@
 int main() {
     int crashCount = 0;
 
-    srand(time(0)); // seed randomness
+    srand(time(0)); 
+
+    loadCorpus("seed");
 
     while (true) {
 
-        //load seed file
-        auto data = readFile("seed/seed.txt");
+        
+        auto data = getRandomInput();
 
         //call mutator
         mutate(data);
@@ -36,7 +39,6 @@ int main() {
 
             break;
         }
-
         std::cout << "Mutation done\n";
 
 
