@@ -8,6 +8,9 @@ fuzzer
 # seed files
 seed/*
 
+# target files
+target/*
+
 # muatated output
 mutated.bin
 
@@ -16,3 +19,6 @@ crashes/*
 
 #ignore target program
 tidy
+
+# scripts / downloads
+llvm.sh

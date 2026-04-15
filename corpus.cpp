@@ -27,7 +27,6 @@ void loadCorpus(const std::string& path) {
     for (const auto& entry : std::filesystem::directory_iterator(path)) {
 
         if (!entry.is_regular_file()) continue;
-
         std::vector<unsigned char> data = readFile(entry.path().string());
 
         corpus.push_back(data);
@@ -48,4 +47,7 @@ std::vector<unsigned char> getRandomInput() {
 }
 
 //add new inputs to corpus (crash or new behaviour)
+void addToCorpus( const std::vector<unsigned char>& data) {
+    corpus.push_back(data);
+}
 

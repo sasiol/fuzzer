@@ -34,6 +34,7 @@ int main() {
             std::string crashFile = "crashes/crash_" + std::to_string(crashCount) + ".bin";
 
             writeFile(crashFile, data);
+            addToCorpus(data);
 
             crashCount++;
 
