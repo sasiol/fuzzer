@@ -3,10 +3,38 @@
 
 #include <unistd.h>
 #include <sys/wait.h>
-#include <iostream>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <cstring>
 
+static const int MAP_SIZE =65536;
+
+unsigned char* shm_map = nullptr;
+int shm_id = -1;
+
+void shareMemory(){
+    //id for allocated shared memory segment
+    shm_id =shmget(IPC_PRIVATE, MAP_SIZE, IPC_CREAT | 0600 );
+
+    if (shm_id <0) {
+        std::cerr << "shmget failed\n";
+        exit(1);
+    }
+    //attach the shared memory segment to this process
+    shm_map = (unsigned char*) shmat(shm_id, nullptr, 0);
+
+    if (shm_map == (void*)-1) {
+        std::cerr << "shmat failed\n";
+        exit(1);
+    }
+
+    memset(shm_map, 0, MAP_SIZE);
+
+}
 
 bool runTarget(const std::string& inputFile) {
+    //give shared memory id to child
+    setenv("SHM_ID", std::to_string(shm_id).c_str(), 1);
     pid_t pid = fork(); //create child process(copy of the program)
 
     //if within child process
