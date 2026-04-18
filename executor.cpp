@@ -34,6 +34,8 @@ void shareMemory(){
 
 bool runTarget(const std::string& inputFile) {
     //give shared memory id to child
+    std::string shm_str = std::to_string(shm_id);
+    setenv("SHM_ID", shm_str.c_str(), 1);
     setenv("SHM_ID", std::to_string(shm_id).c_str(), 1);
     pid_t pid = fork(); //create child process(copy of the program)
 
