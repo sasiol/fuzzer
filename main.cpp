@@ -15,6 +15,8 @@ int main() {
 
     loadCorpus("seed");
 
+    shareMemory();
+    //setenv("SHM_ID", std::to_string(shm_id).c_str(), 1);
     while (true) {
 
         
@@ -22,6 +24,17 @@ int main() {
 
         //call mutator
         mutate(data);
+        std::cout << "Mutation done\n";
+        
+
+        for (unsigned char c : data) {
+            if (std::isprint(c))
+                std::cout << c;
+            else
+                std::cout << ".";
+        }
+
+        std::cout << "\n";
 
         writeFile("mutated.bin", data);
 
@@ -40,7 +53,7 @@ int main() {
 
             break;
         }
-        std::cout << "Mutation done\n";
+        
 
 
     }

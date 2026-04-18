@@ -41,7 +41,7 @@ bool runTarget(const std::string& inputFile) {
     if (pid ==0) {
         //exacl replaces child process with target program (switch to execv?)
              //arguments: (path, program name, input, end of argument)
-        execl("./tidy", "./tidy", inputFile.c_str(), NULL);
+        execl("./target/tidy", "./target/tidy", inputFile.c_str(), NULL);
 
         //if exec fails
         exit(1);
@@ -50,6 +50,16 @@ bool runTarget(const std::string& inputFile) {
         //parent waits for child
         int status;
         waitpid(pid, &status, 0); //
+
+        std::cout << "Coverage snapshot:\n";
+
+        for (int i = 0; i < MAP_SIZE; i++) {
+            if (shm_map[i]) {
+                std::cout << i << " ";
+            }
+        }
+
+        std::cout << "\n";
 
         //WIFSIGNALED return true if the child process was terminated by a signal
         if (WIFSIGNALED(status)) {
