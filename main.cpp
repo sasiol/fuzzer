@@ -8,6 +8,9 @@
 #include <cstdlib>
 #include <ctime>
 
+static const int MAP_SIZE = 65536; //define in common.h for example?
+static bool globalCoverage[MAP_SIZE] = {0};
+
 int main() {
     int crashCount = 0;
 
@@ -39,6 +42,22 @@ int main() {
         writeFile("mutated.bin", data);
 
         bool crashed = runTarget("mutated.bin");
+
+        //check coverage
+        bool newCoverage= false;
+
+        for (int i = 0; i <MAP_SIZE; i++){
+            if (shm_map[i] && !globalCoverage[i]) {
+                globalCoverage[i] = 1;
+                newCoverage = true;
+            }
+        }
+
+        if (newCoverage) {
+            std::cout << "NEW COVERAGE FOUND!\n";
+            addToCorpus(data);
+        }
+        
 
         if (crashed) {
             std::cout << "found crashing input \n";

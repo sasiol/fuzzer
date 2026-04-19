@@ -7,9 +7,9 @@
 #include <sys/shm.h>
 #include <cstring>
 
-static const int MAP_SIZE =65536;
+static const int MAP_SIZE =65536; //move to comon.h?
 
-unsigned char* shm_map = nullptr;
+unsigned char* shm_map = nullptr; //common.h better place etc
 int shm_id = -1;
 
 void shareMemory(){
