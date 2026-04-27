@@ -7,6 +7,7 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <cstring>
 
 static const int MAP_SIZE = 65536; //define in common.h for example?
 static bool globalCoverage[MAP_SIZE] = {0};
@@ -62,6 +63,15 @@ int main() {
 
         if (newCoverage) {
             std::cout << "NEW COVERAGE FOUND!\n";
+            std::cout << "Global coverage: ";
+            for (int i = 0; i < MAP_SIZE; i++) {
+                if (globalCoverage[i]) {
+                    std::cout << i << " ";
+                }
+            }
+            std::cout << "\n";
+
+            memset(shm_map, 0, MAP_SIZE);
             addToCorpus(data, coverageCount);
         }
         

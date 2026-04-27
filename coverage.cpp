@@ -24,7 +24,7 @@ extern "C" void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
     write(2, "HOOK\n", 5);
 
     if (!coverage_map) {
-        write(2, "NOMAP\n", 5);
+       // write(2, "NOMAP\n", 5);
         return;
     }
 
@@ -32,7 +32,7 @@ extern "C" void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
 
     char buf[64];
     int n = snprintf(buf, sizeof(buf), "IDX=%u\n", index);
-    write(2, buf, n);
+    //write(2, buf, n);
 
     coverage_map[index % 65536] = 1;
 }

@@ -68,6 +68,9 @@ void addToCorpus(const std::vector<unsigned char>& data, int coverageCount) {
     in.coverageCount = coverageCount;
     in.timesUsed = 0;
 
+    std::cerr << "[NEW CORPUS ENTRY]\n";
+    std::cerr << "corpus size: " << corpus.size() << "\n";
+    
     corpus.push_back(in);
 }
 

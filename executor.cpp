@@ -28,18 +28,17 @@ void shareMemory(){
         exit(1);
     }
 
-    memset(shm_map, 0, MAP_SIZE);
+    //memset(shm_map, 0, MAP_SIZE);
 
 }
 
 bool runTarget(const std::string& inputFile) {
-    memset(shm_map, 0, MAP_SIZE);
     //give shared memory id to child
     std::string shm_str = std::to_string(shm_id);
     setenv("SHM_ID", shm_str.c_str(), 1);
     setenv("SHM_ID", std::to_string(shm_id).c_str(), 1);
     pid_t pid = fork(); //create child process(copy of the program)
-
+    
     //if within child process
     if (pid ==0) {
         //exacl replaces child process with target program (switch to execv?)
@@ -54,6 +53,7 @@ bool runTarget(const std::string& inputFile) {
         int status;
         waitpid(pid, &status, 0); //
 
+
         std::cout << "Coverage snapshot:\n";
 
         for (int i = 0; i < MAP_SIZE; i++) {
@@ -63,7 +63,7 @@ bool runTarget(const std::string& inputFile) {
         }
 
         std::cout << "\n";
-
+        
         //WIFSIGNALED return true if the child process was terminated by a signal
         if (WIFSIGNALED(status)) {
             int signal = WTERMSIG(status);  //returns number of the signal
