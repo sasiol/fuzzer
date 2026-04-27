@@ -19,7 +19,7 @@ extern "C" void __sanitizer_cov_trace_pc_guard_init(uint32_t *start, uint32_t *e
     }
 }
 
-//coverage map is inside the child process, so it dissapears when child exits
+
 extern "C" void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
     write(2, "HOOK\n", 5);
 

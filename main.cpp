@@ -18,17 +18,17 @@ int main() {
 
     srand(time(0)); 
 
-    loadCorpus("seed");
+    loadCorpus("seed"); 
 
-    shareMemory();
+    shareMemory(); //initialize shared memory segment
     //setenv("SHM_ID", std::to_string(shm_id).c_str(), 1);
     while (true) {
 
-        
+        //get the input to be used
         Input& in = getInput();
         auto data = in.data;
 
-        //call mutator
+        //mutate the input
         mutate(data);
         std::cout << "Mutation done\n";
         

@@ -5,6 +5,7 @@
 
 std::vector<Input> corpus;
 
+//score input based on coverage / times used
 double score(const Input& in) {
     //std::cout << "SCORE\n";
     return (double)in.coverageCount / (1 + in.timesUsed);
@@ -31,19 +32,21 @@ std::vector<unsigned char> readFile(const std::string& filename) {
 }
 
 void loadCorpus(const std::string& path) {
+    //go through the files in the given folder
     for (const auto& entry : std::filesystem::directory_iterator(path)) {
 
         if (!entry.is_regular_file()) continue;
         std::vector<unsigned char> data = readFile(entry.path().string());
 
+        //build input
         Input in;
         in.data = data;
         in.coverageCount = 0;
         in.timesUsed = 0;
 
-        corpus.push_back(in);
+        corpus.push_back(in); 
     }
-
+    //for debug
     std::cout << "Loaded " << corpus.size() << " seeds\n";
 }
 
@@ -74,41 +77,43 @@ Input& getInput() {
         exit(1);
     }
 
-    double total = 0.0;
+    double total = 0.0; //sum of all scores (probability line)
 
     for (auto& in : corpus) {
         double s = score(in);
-        if (s < 1.0) s = 1.0;
+        if (s < 1.0) s = 1.0; //make sure none are 0, cause they wont be selected
         total += s;
     }
 
-    double r = ((double)rand() / RAND_MAX) * total;
+    //get random point on the probability line
+    double rPoint = ((double)rand() / RAND_MAX) * total;
 
-    double running = 0.0;
+    double seg = 0.0;
 
+    //Find input that matches the rPoint
     for (auto& in : corpus) {
         double s = score(in);
         if (s < 1.0) s = 1.0;
 
-        running += s;
+        seg += s;
 
-        if (running >= r) {
+        if (seg >= rPoint) {
             in.timesUsed++;
             std::cerr << "[SELECTED INPUT]\n";
             std::cerr << "timesUsed: " << in.timesUsed << "\n";
             std::cerr << "coverageCount: " << in.coverageCount << "\n";
             std::cerr << "data: ";
-for (unsigned char c : in.data) {
-    if (std::isprint(c))
-        std::cerr << c;
-    else
-        std::cerr << ".";
-}
-std::cerr << "\n";
+                for (unsigned char c : in.data) {
+                    if (std::isprint(c))
+                        std::cerr << c;
+                    else
+                        std::cerr << ".";
+                }
+            std::cerr << "\n";
             return in;
         }
     }
-
+    //fallback
     corpus.back().timesUsed++;
     return corpus.back();
 }
