@@ -12,9 +12,28 @@
 static const int MAP_SIZE = 65536; //define in common.h for example?
 static bool globalCoverage[MAP_SIZE] = {0};
 
+enum class Mode{
+    RANDOM,
+    GUIDED
+};
+
+Mode mode;
 
 
 int main() {
+    char choice;
+
+    std::cout << "Select mode:\n";
+    std::cout << "1 = random\n";
+    std::cout << "2 = coverage guided\n";
+    std::cin >> choice;
+
+    if (choice == '1') mode = Mode::RANDOM;
+    else mode = Mode::GUIDED;
+
+
+
+
     int crashCount = 0;
 
     srand(time(0)); 
@@ -26,7 +45,9 @@ int main() {
     while (true) {
 
         //get the input to be used
-        Input& in = getInput();
+        Input& in = (mode == Mode::RANDOM)
+            ? getRandomInput()
+            : getInput();
         auto data = in.data;
 
         //mutate the input

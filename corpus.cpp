@@ -51,14 +51,14 @@ void loadCorpus(const std::string& path) {
 }
 
 //choose random input from corpus
-std::vector<unsigned char> getRandomInput() {
+Input& getRandomInput() {
     if (corpus.empty()) {
         std::cerr << "Corpus is empty!\n";
         exit(1);
     }
 
     int index = rand() % corpus.size();
-    return corpus[index].data;
+    return corpus[index];
 }
 
 //add new inputs to corpus (crash or new behaviour)
@@ -70,7 +70,7 @@ void addToCorpus(const std::vector<unsigned char>& data, int coverageCount) {
 
     std::cerr << "[NEW CORPUS ENTRY]\n";
     std::cerr << "corpus size: " << corpus.size() << "\n";
-    
+
     corpus.push_back(in);
 }
 
