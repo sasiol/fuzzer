@@ -33,6 +33,7 @@ void shareMemory(){
 }
 
 bool runTarget(const std::string& inputFile) {
+    memset(shm_map, 0, MAP_SIZE);
     //give shared memory id to child
     std::string shm_str = std::to_string(shm_id);
     setenv("SHM_ID", shm_str.c_str(), 1);

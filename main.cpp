@@ -11,6 +11,8 @@
 static const int MAP_SIZE = 65536; //define in common.h for example?
 static bool globalCoverage[MAP_SIZE] = {0};
 
+
+
 int main() {
     int crashCount = 0;
 
@@ -23,7 +25,8 @@ int main() {
     while (true) {
 
         
-        auto data = getRandomInput();
+        Input& in = getInput();
+        auto data = in.data;
 
         //call mutator
         mutate(data);
@@ -43,6 +46,10 @@ int main() {
 
         bool crashed = runTarget("mutated.bin");
 
+        int coverageCount = 0;
+        for (int i = 0; i < MAP_SIZE; i++) {
+            if (shm_map[i]) coverageCount++;
+        }
         //check coverage
         bool newCoverage= false;
 
@@ -55,7 +62,7 @@ int main() {
 
         if (newCoverage) {
             std::cout << "NEW COVERAGE FOUND!\n";
-            addToCorpus(data);
+            addToCorpus(data, coverageCount);
         }
         
 
@@ -66,7 +73,7 @@ int main() {
             std::string crashFile = "crashes/crash_" + std::to_string(crashCount) + ".bin";
 
             writeFile(crashFile, data);
-            addToCorpus(data);
+            //addToCorpus(data);
 
             crashCount++;
 
