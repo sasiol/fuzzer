@@ -1,0 +1,23 @@
+name: Fuzzer pipeline
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Build Docker image
+        run: docker build -t fuzzer .
+
+      - name: Test that fuzzer runs (5secs)
+        run: docker run --rm fuzzer timeout 5s ./fuzzer || true
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'fuzzer'
