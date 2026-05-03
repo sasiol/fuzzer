@@ -7,9 +7,11 @@ fuzzer
 
 # seed files
 seed/*
+!seed/example.txt
 
 # target files
 target/*
+!target/example.c
 
 # muatated output
 mutated.bin
