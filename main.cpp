@@ -26,7 +26,10 @@ int main() {
     std::cout << "Select mode:\n";
     std::cout << "1 = random\n";
     std::cout << "2 = coverage guided\n";
-    std::cin >> choice;
+
+    if (!(std::cin >> choice)) {
+        choice = '2'; // default (mostly for pipeline)
+    }
 
     if (choice == '1') mode = Mode::RANDOM;
     else mode = Mode::GUIDED;
