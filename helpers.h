@@ -1,5 +1,5 @@
-#ifndef MUTATOR_H
-#define MUTATOR_H
+#ifndef HELPERS_H
+#define HELPERS_H
 
 #pragma once
 #include <string>

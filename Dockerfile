@@ -27,7 +27,7 @@ RUN set -e && \
 
 # Build fuzzer
 RUN g++ -std=c++17 \
-    main.cpp mutator.cpp executor.cpp corpus.cpp coverage.cpp helper.cpp \
+    main.cpp mutator.cpp executor.cpp corpus.cpp coverage.cpp helpers.cpp \
     -o fuzzer
 
 #  Make sure seed folder exists

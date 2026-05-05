@@ -1,5 +1,7 @@
+#include "helpers.h"
 #include <dirent.h>
 #include <sys/stat.h>
+#include <string>
 
 std::string findTargetBinary() {
     DIR* dir = opendir("./target");
@@ -12,11 +14,13 @@ std::string findTargetBinary() {
 
         if (name == "." || name == "..") continue;
 
+        // only allow files without extension (likely binaries)
+        if (name.find('.') != std::string::npos) continue;
+
         std::string path = "./target/" + name;
 
         struct stat st;
         if (stat(path.c_str(), &st) == 0) {
-            // check if it's a regular file AND executable
             if (S_ISREG(st.st_mode) && (st.st_mode & S_IXUSR)) {
                 closedir(dir);
                 return path;
