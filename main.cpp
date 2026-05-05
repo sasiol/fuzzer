@@ -2,6 +2,8 @@
 #include "executor.h"
 #include "corpus.h"
 
+#include <sys/ipc.h>
+#include <sys/shm.h>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -95,7 +97,7 @@ int main() {
             }
             std::cout << "\n";
 
-            memset(shm_map, 0, MAP_SIZE);
+            memset(shm_map, 0, sizeof(unsigned char) * MAP_SIZE);
             addToCorpus(data, coverageCount);
         }
         
@@ -117,7 +119,9 @@ int main() {
 
 
     }
-
+    //cleanup
+    shmdt(shm_map);
+    shmctl(shm_id, IPC_RMID, nullptr);
     return 0;
 
 }

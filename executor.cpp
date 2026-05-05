@@ -1,3 +1,6 @@
+
+#include "helpers.h"
+
 #include <cstdlib>
 #include <iostream>
 
@@ -37,14 +40,23 @@ bool runTarget(const std::string& inputFile) {
     std::string shm_str = std::to_string(shm_id);
     setenv("SHM_ID", shm_str.c_str(), 1);
     setenv("SHM_ID", std::to_string(shm_id).c_str(), 1);
+
+    std::string targetPath = findTargetBinary();
+
+        if (targetPath.empty()) {
+            std::cerr << "No executable target found!\n";
+            return false;
+        }
+    std::cout << "[TARGET] " << targetPath << "\n";
     pid_t pid = fork(); //create child process(copy of the program)
-    
+
     //if within child process
     if (pid ==0) {
         //exacl replaces child process with target program (switch to execv?)
-             //arguments: (path, program name, input, end of argument)
-        execl("./target/tidy", "./target/tidy", inputFile.c_str(), NULL);
-
+        execl(targetPath.c_str(),
+            targetPath.c_str(),
+            inputFile.c_str(),
+            NULL);
         //if exec fails
         exit(1);
 

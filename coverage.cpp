@@ -21,7 +21,7 @@ extern "C" void __sanitizer_cov_trace_pc_guard_init(uint32_t *start, uint32_t *e
 
 
 extern "C" void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
-    write(2, "HOOK\n", 5);
+    //write(2, "HOOK\n", 5);
 
     if (!coverage_map) {
        // write(2, "NOMAP\n", 5);
@@ -44,7 +44,7 @@ extern "C" void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
 
 //attach in child
 void attachCoverageMap(){
-    write(2, "ATTACH\n", 7);
+    //write(2, "ATTACH\n", 7);
 
     char* shm_str = getenv("SHM_ID");
     if (!shm_str) {
