@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 
+inline constexpr int FUZZ_TIMEOUT_SECS = 3; //used if target program gets stuck
+
 extern unsigned char* shm_map;
 extern int shm_id;
 inline constexpr int MAP_SIZE = 65536;
