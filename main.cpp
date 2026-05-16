@@ -11,41 +11,21 @@
 #include <cstdlib>
 #include <ctime>
 #include <cstring>
+#include <cctype>
 
 //Main fuzzing loop implementation
 
 
-static const int MAP_SIZE = 65536; //define in common.h for example?
 static bool globalCoverage[MAP_SIZE] = {0};
 int iteration=0;
 
-//modes for random and guided fuzzing that user chooses between in the begining
-enum class Mode{
-    RANDOM,
-    GUIDED
-};
-
-Mode mode;
-
 
 int main() {
-    char choice;
-
-    //mode selection choises presented to user
-    std::cout << "Select mode:\n";
-    std::cout << "1 = random\n";
-    std::cout << "2 = coverage guided\n";
-
-    if (!(std::cin >> choice)) {
-        choice = '2'; // default (mostly for pipeline)
-    }
-
-    if (choice == '1') mode = Mode::RANDOM;
-    else mode = Mode::GUIDED;
-
-
-
-
+    
+    //ask user for what kind of fuzzing they want (random or coverage guided)
+    //and what log mode they want (normal or debug)
+    setFuzzMode();
+    setLogMode();
     int crashCount = 0;
 
     srand(time(0)); 
@@ -57,62 +37,66 @@ int main() {
     while (true) {
 
         iteration++; 
+        std::memset(shm_map, 0, MAP_SIZE); //reset coverage map for each iteration
         //get the input to be used
-        Input& in = (mode == Mode::RANDOM)
+        Input& in = (fmode == fuzzMode::RANDOM)
             ? getRandomInput() //choose input randomly
             : getInput(); // choose it by favouring new coverage
         auto data = in.data;
 
         //mutate the input
         mutate(data);
-        std::cout << "Mutation done\n";
         
-
+        //for debugging the mutation
+       if (lmode == LogMode::DEBUG) {
+        std::cout << "Mutation done\n";
         for (unsigned char c : data) {
             if (std::isprint(c))
                 std::cout << c;
             else
                 std::cout << ".";
         }
-
         std::cout << "\n";
+        }
+
 
         writeFile("mutated.bin", data);
 
+        //run target program with the mutated data
         bool crashed = runTarget("mutated.bin");
 
         int coverageCount = 0;
+        bool newCoverage = false;
+        //track coverage by shared memory map
         for (int i = 0; i < MAP_SIZE; i++) {
-            if (shm_map[i]) coverageCount++;
-        }
-        //check coverage
-        bool newCoverage= false;
+            if (shm_map[i]) {
+                coverageCount++;
 
-        for (int i = 0; i <MAP_SIZE; i++){
-            if (shm_map[i] && !globalCoverage[i]) {
-                globalCoverage[i] = 1;
-                newCoverage = true;
+                if (!globalCoverage[i]) {
+                    globalCoverage[i] = 1;
+                    newCoverage = true;
+                }
             }
         }
 
         if (newCoverage) {
-            std::cout << "NEW COVERAGE FOUND!\n";
-            std::cout << "Global coverage: ";
-            for (int i = 0; i < MAP_SIZE; i++) {
-                if (globalCoverage[i]) {
-                    std::cout << i << " ";
+            //debug part for checking coverage growing
+             if (lmode == LogMode::DEBUG) {
+                std::cout << "NEW COVERAGE FOUND!\n";
+                std::cout << "Global coverage: ";
+                for (int i = 0; i < MAP_SIZE; i++) {
+                    if (globalCoverage[i]) {
+                        std::cout << i << " ";
+                    }
                 }
-            }
             std::cout << "\n";
-
-            memset(shm_map, 0, sizeof(unsigned char) * MAP_SIZE);
+            }
+            lastInterestingInput = data;
             addToCorpus(data, coverageCount);
         }
         
 
         if (crashed) {
-            std::cout << "found crashing input \n";
-
             //save results
             std::string crashFile = "crashes/crash_" + std::to_string(crashCount) + ".bin";
 
@@ -120,16 +104,17 @@ int main() {
             //addToCorpus(data);
 
             crashCount++;
-
-            break;
         }
-
-        printStatus(
-        iteration,
-        coverageCount,
-        crashCount,
-        (mode == Mode::RANDOM ? "random" : "guided")
-        );
+        // show status
+        if (lmode == LogMode::NORMAL){
+            printStatus(
+            iteration,
+            coverageCount,
+            crashCount,
+            (fmode == fuzzMode::RANDOM ? "random" : "guided"),
+            lastInterestingInput
+            );
+        }
        
 
     }

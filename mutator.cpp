@@ -14,7 +14,7 @@
 void mutate(std::vector<unsigned char>& data) {
     if (data.empty()) return;
 
-    int numMutations = rand() % 10 + 1; // change to use random next?
+    int numMutations = rand() % 5 + 1; // change to use random next?
 
     for (int i = 0; i < numMutations; i++) {
         int x = rand() % 4;
@@ -44,9 +44,4 @@ void mutate(std::vector<unsigned char>& data) {
     }
 }
 
-// Save  file
-void writeFile(const std::string& filename, const std::vector<unsigned char>& data) {
-    std::ofstream file(filename, std::ios::binary);
-    file.write((char*)data.data(), data.size());
-}
 

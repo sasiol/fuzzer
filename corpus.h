@@ -13,7 +13,6 @@ struct Input {
 extern std::vector<Input> corpus;
 
 double score(const Input& in);
-std::vector<unsigned char> readFile(const std::string& filename);
 void loadCorpus(const std::string& path);
 Input& getRandomInput();
 void addToCorpus(const std::vector<unsigned char>& data, int coverageCount);
