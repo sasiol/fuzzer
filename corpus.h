@@ -11,7 +11,7 @@ struct Input {
 };
 
 extern std::vector<Input> corpus;
-
+void warmUpCorpus(bool globalCoverage[], int& globalCoverageCount);
 double score(const Input& in);
 void loadCorpus(const std::string& path);
 Input& getRandomInput();

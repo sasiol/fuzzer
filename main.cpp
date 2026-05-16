@@ -2,7 +2,7 @@
 #include "executor.h"
 #include "corpus.h"
 #include "helpers.h"
-
+#include <filesystem> 
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <iostream>
@@ -33,7 +33,10 @@ int main() {
     loadCorpus("seed"); 
 
     shareMemory(); //initialize shared memory segment
-    //setenv("SHM_ID", std::to_string(shm_id).c_str(), 1);
+    warmUpCorpus(globalCoverage, globalCoverageCount); //warm up run to see what the coverage of seeds are
+    
+    std::filesystem::create_directories("crashes");
+
     while (true) {
 
         iteration++; 

@@ -17,7 +17,7 @@ target/*
 mutated.bin
 
 # Crash outputs
-crashes/*
+crashes/
 
 #ignore target program
 tidy

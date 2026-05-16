@@ -1,12 +1,35 @@
 #include "corpus.h"
 #include "helpers.h"
+#include "executor.h"  
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <cctype>
+#include <cstring>     
 
 std::vector<Input> corpus;
 
+// Runs each seed once to see its coverage before the main loop so that weighted calculations are accurate.
+void warmUpCorpus(bool globalCoverage[], int& globalCoverageCount) {
+    for (auto& seed : corpus) {
+        writeFile("mutated.bin", seed.data);
+        runTarget("mutated.bin");
+        int count = 0;
+        for (int i = 0; i < MAP_SIZE; i++) {
+            if (shm_map[i]) {
+                count++;
+                if (!globalCoverage[i]) {
+                    globalCoverage[i] = 1;
+                    globalCoverageCount++;
+                }
+            }
+        }
+        seed.coverageCount = count;
+        std::memset(shm_map, 0, MAP_SIZE);
+    }
+    if (lmode == LogMode::DEBUG)
+        std::cout << "Seed calibration done. Global coverage: " << globalCoverageCount << " edges\n";
+}
 //score input based on coverage / times used
 double score(const Input& in) {
     //std::cout << "SCORE\n";
