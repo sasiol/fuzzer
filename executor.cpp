@@ -61,14 +61,14 @@ bool runTarget(const std::string& inputFile) {
         if (WIFSIGNALED(status)) {
             int signal = WTERMSIG(status);  //returns number of the signal
 
-            std::cout << "CRASH! Signal: " << signal << "\n";
+            if (lmode == LogMode::DEBUG) std::cout << "CRASH! Signal: " << signal << "\n";
 
             if (signal == SIGABRT) {
-                std::cout << "SIGBART detected(abort) \n";
+               if (lmode == LogMode::DEBUG)  std::cout << "SIGBART detected(abort) \n";
             }
 
             if (signal == SIGSEGV) {
-                std::cout << "→ Detected SIGSEGV (segfault)\n";
+              if (lmode == LogMode::DEBUG)   std::cout << "→ Detected SIGSEGV (segfault)\n";
             }
             return true;
         } //later add more crash signals

@@ -37,7 +37,6 @@ int main() {
     while (true) {
 
         iteration++; 
-        std::memset(shm_map, 0, MAP_SIZE); //reset coverage map for each iteration
         //get the input to be used
         Input& in = (fmode == fuzzMode::RANDOM)
             ? getRandomInput() //choose input randomly
@@ -115,7 +114,7 @@ int main() {
             lastInterestingInput
             );
         }
-       
+       std::memset(shm_map, 0, MAP_SIZE); 
 
     }
     //cleanup
