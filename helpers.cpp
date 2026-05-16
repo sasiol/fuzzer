@@ -151,14 +151,15 @@ void printStatus(int iteration,
                  int coverage,
                  int crashCount,
                  const std::string& mode,
-                 const std::vector<unsigned char>& lastInput)
-{
-    std::cout << "\rIterations: " << iteration
-              << " | Coverage: " << coverage
-              << " | Crashes: " << crashCount
-              << " | Mode: " << mode
-              << " | Last Interesting Input: " << toPrintData(lastInput)
-              << std::flush;
+                 const std::vector<unsigned char>& lastInput){
+
+                    std::cout << "\r\033[2K"   // clears entire line
+                    << "Iterations: " << iteration
+                    << " | Mode: " << mode
+                    << " | Coverage: " << coverage
+                    << " | Crashes: " << crashCount
+                    << " | Last : " << toPrintData(lastInput)
+                    << std::flush;
 }
 
 

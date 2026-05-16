@@ -3,9 +3,9 @@ FROM ubuntu:22.04
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-    build-essential \
     g++ \
     clang \
+    make \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory inside container
@@ -20,9 +20,10 @@ RUN set -e && \
     test -n "$TARGET_FILE" && \
     TARGET_NAME=$(basename "$TARGET_FILE" .c) && \
     echo "Found target: $TARGET_FILE" && \
-    clang -x c "$TARGET_FILE" -c -o target.o && \
-    clang++ -std=c++17 coverage.cpp -c -o coverage.o && \
-    clang++ target.o coverage.o -o "target/$TARGET_NAME"
+    clang++ "$TARGET_FILE" coverage.cpp \
+        -o "target/$TARGET_NAME" \
+        -fsanitize-coverage=trace-pc-guard \
+        -O0 -g
 
 # Build fuzzer
 RUN g++ -std=c++17 \

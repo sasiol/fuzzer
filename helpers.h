@@ -19,8 +19,8 @@ void printStatus(int iteration,
                  int coverage,
                  int crashCount,
                  const std::string& mode,
-                 const std::vector<unsigned char>& lastInterestingInput)
-{
+                 const std::vector<unsigned char>& lastInterestingInput);
+
 
 void setFuzzMode();
 enum class fuzzMode{

@@ -1,12 +1,12 @@
-
-#include "helpers.h"
-#include <cstdio>
-#include <sys/ipc.h>
-#include <sys/shm.h>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <iostream>
 #include <unistd.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+
+#include "helpers.h"
+
 
 
 unsigned char* coverage_map = nullptr;
