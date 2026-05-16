@@ -1,6 +1,7 @@
 #include "mutator.h"
 #include "executor.h"
 #include "corpus.h"
+#include "helpers.h"
 
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -11,9 +12,14 @@
 #include <ctime>
 #include <cstring>
 
+//Main fuzzing loop implementation
+
+
 static const int MAP_SIZE = 65536; //define in common.h for example?
 static bool globalCoverage[MAP_SIZE] = {0};
+int iteration=0;
 
+//modes for random and guided fuzzing that user chooses between in the begining
 enum class Mode{
     RANDOM,
     GUIDED
@@ -25,6 +31,7 @@ Mode mode;
 int main() {
     char choice;
 
+    //mode selection choises presented to user
     std::cout << "Select mode:\n";
     std::cout << "1 = random\n";
     std::cout << "2 = coverage guided\n";
@@ -49,10 +56,11 @@ int main() {
     //setenv("SHM_ID", std::to_string(shm_id).c_str(), 1);
     while (true) {
 
+        iteration++; 
         //get the input to be used
         Input& in = (mode == Mode::RANDOM)
-            ? getRandomInput()
-            : getInput();
+            ? getRandomInput() //choose input randomly
+            : getInput(); // choose it by favouring new coverage
         auto data = in.data;
 
         //mutate the input
@@ -115,8 +123,14 @@ int main() {
 
             break;
         }
-        
 
+        printStatus(
+        iteration,
+        coverageCount,
+        crashCount,
+        (mode == Mode::RANDOM ? "random" : "guided")
+        );
+       
 
     }
     //cleanup
