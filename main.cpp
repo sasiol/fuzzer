@@ -18,7 +18,7 @@
 
 static bool globalCoverage[MAP_SIZE] = {0};
 int iteration=0;
-
+int globalCoverageCount = 0;
 
 int main() {
     
@@ -38,10 +38,11 @@ int main() {
 
         iteration++; 
         //get the input to be used
-        Input& in = (fmode == fuzzMode::RANDOM)
-            ? getRandomInput() //choose input randomly
-            : getInput(); // choose it by favouring new coverage
-        auto data = in.data;
+        Input inCopy = (fmode == fuzzMode::RANDOM)
+            ? getRandomInput()
+            : getInput();
+
+        auto data = inCopy.data;
 
         //mutate the input
         mutate(data);
@@ -73,8 +74,9 @@ int main() {
 
                 if (!globalCoverage[i]) {
                     globalCoverage[i] = 1;
+                    globalCoverageCount++;
                     newCoverage = true;
-                }
+                 }
             }
         }
 
@@ -90,6 +92,7 @@ int main() {
                 }
             std::cout << "\n";
             }
+            
             lastInterestingInput = data;
             addToCorpus(data, coverageCount);
         }
@@ -108,7 +111,7 @@ int main() {
         if (lmode == LogMode::NORMAL){
             printStatus(
             iteration,
-            coverageCount,
+            globalCoverageCount,
             crashCount,
             (fmode == fuzzMode::RANDOM ? "random" : "guided"),
             lastInterestingInput
