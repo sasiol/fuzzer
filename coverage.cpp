@@ -42,7 +42,6 @@ void attachCoverageMap(){
 
     char* shm_str = getenv("SHM_ID");
     if (!shm_str) {
-        write(2, "NO ENV\n", 7);
         return;
     }
 

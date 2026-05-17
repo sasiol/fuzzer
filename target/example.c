@@ -4,7 +4,6 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-        std::cerr << "TARGET START\n";
         char ptr[20];
         if(argc>1){
                 FILE *fp = fopen(argv[1], "r");
