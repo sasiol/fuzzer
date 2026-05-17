@@ -35,7 +35,11 @@ bool runTarget(const std::string& inputFile) {
             return false;
         }
     pid_t pid = fork(); //create child process(copy of the program)
-
+    //incase fork fails and child is not created
+    if (pid < 0) {
+        std::cerr << "fork() failed\n";
+        return false;
+    }
     //if within child process
     if (pid ==0) {
         if (lmode == LogMode::NORMAL){
