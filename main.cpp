@@ -12,6 +12,8 @@
 #include <ctime>
 #include <cstring>
 #include <cctype>
+#include <csignal>
+
 
 //Main fuzzing loop implementation
 
@@ -21,7 +23,8 @@ int iteration=0;
 int globalCoverageCount = 0;
 
 int main() {
-    
+    std::signal(SIGINT, handleSigint); // for exiting the program safely with Ctrl C
+    std::signal(SIGTERM, handleSigint); //for when docker conatiner is stopped
     //ask user for what kind of fuzzing they want (random or coverage guided)
     //and what log mode they want (normal or debug)
     setFuzzMode();
@@ -38,6 +41,11 @@ int main() {
     std::filesystem::create_directories("crashes");
 
     while (true) {
+
+        if (stop) {
+            cleanup();
+            break;
+        }
 
         iteration++; 
         //get the input to be used

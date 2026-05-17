@@ -4,15 +4,18 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <csignal>
 
 inline constexpr int FUZZ_TIMEOUT_SECS = 3; //used if target program gets stuck
+extern volatile std::sig_atomic_t stop;
 
 extern unsigned char* shm_map;
 extern int shm_id;
 inline constexpr int MAP_SIZE = 65536;
 
 extern std::vector<unsigned char> lastInterestingInput;
-
+void cleanup();
+void handleSigint(int);
 std::string findTargetBinary();
 std::vector<unsigned char> readFile(const std::string& filename);
 void writeFile(const std::string& filename, const std::vector<unsigned char>& data);

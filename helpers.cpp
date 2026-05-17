@@ -9,6 +9,8 @@
 #include <filesystem>
 #include <fstream>
 #include <vector>
+#include <signal.h>
+
 
 //Here can be found functions for:
 //setFuzzMode
@@ -16,6 +18,7 @@
 //readFile
 //writeFile
 //shareMemory
+//cleanup
 //findTargetBinary
 //printStatus
 
@@ -24,7 +27,13 @@ int shm_id = -1;
 fuzzMode fmode;
 LogMode lmode;
 
+volatile std::sig_atomic_t stop = 0;
+
 std::vector<unsigned char> lastInterestingInput;
+
+void handleSigint(int) {
+    stop = 1;
+}
 
 void setFuzzMode() {
     char fuzzChoice;
@@ -101,7 +110,13 @@ void shareMemory(){
     }
 }
 
-
+void cleanup() {
+    if (shm_map != nullptr) {
+        shmdt(shm_map);
+        shmctl(shm_id, IPC_RMID, nullptr);
+            if (lmode == LogMode::DEBUG) std::cout << "cleanup done. goodbye\n";
+    }
+}
 
 std::string findTargetBinary() {
     DIR* dir = opendir("./target");
