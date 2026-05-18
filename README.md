@@ -34,21 +34,9 @@ The Dockerfile automatically compiles the target with coverage instrumentation.
 ### Quick build and run
 ```bash
 docker build -t fuzzer .
-docker run -it fuzzer
+docker run -it --name fuzru fuzzer
 ```
-### Persisting crash output (optional)
-
-Crash files are written to `/fuzz/crashes` inside the container.
-
-To make crash files available directly on the host machine, create a local `crashes/` directory and mount it into the container:
-
-```bash
-mkdir -p crashes
-docker run -it -v $(pwd)/crashes:/fuzz/crashes fuzzer
-```
-
-Crash files will then appear in the local `./crashes` directory in real time.
-
+If you get a "name already in use" error, remove the old container first: ```bash docker rm fuzru ```
 
 When the fuzzer starts, select the fuzzing mode and logging mode:
 
@@ -61,6 +49,21 @@ Select Logging mode:
 1 = normal
 2 = debug
 ```
+
+## Crash Output
+
+Crash files are stored inside the container at:
+
+```
+/fuzz/crashes
+```
+
+To retrieve crash files after execution, copy them from the container to your host machine:
+
+```bash
+docker cp fuzru:/fuzz/crashes ./crashes
+```
+
 ## Project Structure
 
 ```bash
