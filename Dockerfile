@@ -2,7 +2,7 @@
 FROM ubuntu:22.04
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     g++ \
     clang \
     make \
@@ -32,6 +32,12 @@ RUN g++ -std=c++17 \
 
 #  Make sure seed folder exists
 RUN mkdir -p seed && echo "test" > seed/hello
+
+# Create non-root user and give them ownership of the working directory
+RUN useradd -m fuzzer && chown -R fuzzer:fuzzer /fuzz
+
+# Switch to non-root user before running
+USER fuzzer
 
 # Default command when container runs
 CMD ["./fuzzer"]
