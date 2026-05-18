@@ -40,6 +40,17 @@ Select Logging mode:
 
 ```
 
+## Crash output
+
+Crash files are written to `/fuzz/crashes` inside the container.
+
+To access them on the host machine, mount a local directory:
+
+```bash
+mkdir -p crashes
+docker run -it -v $(pwd)/crashes:/fuzz/crashes fuzzer
+```
+
 ## Project Structure
 
 ```bash
