@@ -18,39 +18,49 @@ readable codebase.
 
 ## Running with Docker (recommended)
 ### Adding your own target
-Place your target source file (.c or .cpp) in the target/ directory. Only one target file is supported at a time.
-Place one or more seed input files in the seed/ directory.
-Build and run with Docker — the Dockerfile compiles the target automatically with coverage instrumentation.
 
-The easiest way to run the fuzzer is inside the provided Docker container, which handles all build steps automatically.
 
+Place your target source file (`.c` or `.cpp`) in the `target/` directory.
+(An example target file is already included.)
+
+Only one target file is supported at a time.
+
+Place one or more seed input files in the `seed/` directory.
+(An example seed file is already included.)
+
+The Dockerfile automatically compiles the target with coverage instrumentation.
+
+
+### Quick build and run
 ```bash
 docker build -t fuzzer .
 docker run -it fuzzer
 ```
-When the fuzzer starts, select the fuzzing mode and logging mode:
-
-```bash
-Select Fuzzing mode:
-1 = random
-2 = coverage guided
-Select Logging mode:
-1 = normal
-2 = debug
-
-```
-
-## Crash output
+### Persisting crash output (optional)
 
 Crash files are written to `/fuzz/crashes` inside the container.
 
-To access them on the host machine, mount a local directory:
+To make crash files available directly on the host machine, create a local `crashes/` directory and mount it into the container:
 
 ```bash
 mkdir -p crashes
 docker run -it -v $(pwd)/crashes:/fuzz/crashes fuzzer
 ```
 
+Crash files will then appear in the local `./crashes` directory in real time.
+
+
+When the fuzzer starts, select the fuzzing mode and logging mode:
+
+```text
+Select Fuzzing mode:
+1 = random
+2 = coverage guided
+
+Select Logging mode:
+1 = normal
+2 = debug
+```
 ## Project Structure
 
 ```bash
