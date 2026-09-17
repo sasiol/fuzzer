@@ -166,14 +166,21 @@ void printStatus(int iteration,
                  int coverage,
                  int crashCount,
                  const std::string& mode,
+                 double runtime,
+                 double execPerSec,
+                 size_t corpusSize,
                  const std::vector<unsigned char>& lastInput){
 
-                    std::cout << "\r\033[2K"   // clears entire line
-                    << "Iterations: " << iteration
-                    << " | Mode: " << mode
-                    << " | Coverage: " << coverage
-                    << " | Crashes: " << crashCount
-                    << " | Last : " << toPrintData(lastInput)
+                    std::cout << "\033[H\033[J"  // clear screen and move cursor to top
+                    << "=== Fuzzer Status ===\n"
+                    << "Iterations: " << iteration << "\n"
+                    << "Mode:       " << mode << "\n"
+                    << "Coverage:   " << coverage << "\n"
+                    << "Crashes:    " << crashCount << "\n"
+                    << "Corpus:     " << corpusSize << "\n"
+                    << "Exec/s:     " << static_cast<int>(execPerSec) << "\n"
+                    << "Runtime:    " << static_cast<int>(runtime) << "s\n"
+                    << "Last Interesting Input: " << toPrintData(lastInput) << "s\n"
                     << std::flush;
 }
 

@@ -24,6 +24,9 @@ void printStatus(int iteration,
                  int coverage,
                  int crashCount,
                  const std::string& mode,
+                 double runtime,
+                 double execPerSec,
+                 size_t corpusSize,
                  const std::vector<unsigned char>& lastInterestingInput);
 
 

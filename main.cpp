@@ -23,6 +23,8 @@ int iteration=0;
 int globalCoverageCount = 0;
 
 int main() {
+    //std::cout << "\033[?1049h" << std::flush; // enter alternate screen
+
     std::signal(SIGINT, handleSigint); // for exiting the program safely with Ctrl C
     std::signal(SIGTERM, handleSigint); //for when docker conatiner is stopped
     //ask user for what kind of fuzzing they want (random or coverage guided)
@@ -30,6 +32,7 @@ int main() {
     setFuzzMode();
     setLogMode();
     int crashCount = 0;
+    auto startTime = std::chrono::steady_clock::now(); // to track run time
 
     srand(time(0)); 
 
@@ -54,7 +57,6 @@ int main() {
             : getInput();
 
         auto data = inCopy.data;
-
         //mutate the input
         mutate(data);
         
@@ -120,11 +122,20 @@ int main() {
         }
         // show status
         if (lmode == LogMode::NORMAL){
+            auto now = std::chrono::steady_clock::now();
+            double runtime =std::chrono::duration<double>(now - startTime).count();
+
+            double execPerSec = runtime > 0
+                ? iteration / runtime
+                : 0.0;
             printStatus(
             iteration,
             globalCoverageCount,
             crashCount,
             (fmode == fuzzMode::RANDOM ? "random" : "guided"),
+            runtime,
+            execPerSec,
+            corpus.size(),
             lastInterestingInput
             );
         }
@@ -134,6 +145,7 @@ int main() {
     //cleanup
     shmdt(shm_map);
     shmctl(shm_id, IPC_RMID, nullptr);
+    //std::cout << "\033[?1049l" << std::flush; // return to normal screen
     return 0;
 
 }
