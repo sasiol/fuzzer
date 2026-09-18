@@ -1,5 +1,7 @@
 services:
   fuzzer:
     build: .
+    stdin_open: true
+    tty: true
     volumes:
       - ./crashes:/fuzz/crashes

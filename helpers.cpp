@@ -60,7 +60,7 @@ void setLogMode() {
     std::cout << "2 = debug\n";
 
     if (!(std::cin >> logChoice)) {
-        logChoice = '2';
+        logChoice = '1';
     }
 
     if (logChoice == '2')
