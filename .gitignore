@@ -17,10 +17,8 @@ target/*
 mutated.bin
 
 # Crash outputs
-crashes/
-
-#ignore target program
-tidy
+crashes/*
+!crashes/.gitkeep
 
 # scripts / downloads
 llvm.sh
