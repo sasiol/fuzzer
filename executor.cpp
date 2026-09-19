@@ -13,12 +13,12 @@
 #include <cstring>
 
 static pid_t currentChildPid = -1;
-static volatile bool timedOut = false;
+static volatile sig_atomic_t timedOut = 0;
 //alarm for if target program gets stuck (kills the child)
 static void handleAlarm(int) {
     timedOut = true;
     if (currentChildPid > 0) {
-        kill(currentChildPid, SIGKILL);
+        kill(-currentChildPid, SIGKILL);
     }
 }
 
@@ -42,6 +42,11 @@ bool runTarget(const std::string& inputFile) {
     }
     //if within child process
     if (pid ==0) {
+        //put the current child process into new process group
+        if (setpgid(0, 0) == -1) {
+            _exit(1);
+        }
+
         if (lmode == LogMode::NORMAL){
         // silence target output
         freopen("/dev/null", "w", stdout);
@@ -53,9 +58,14 @@ bool runTarget(const std::string& inputFile) {
             inputFile.c_str(),
             nullptr);
         //if exec fails
-        exit(1);
+        _exit(1);
 
-    } else {
+    } // for parent process
+    else {
+        //ensure that the child has joined the right process group
+        if (setpgid(pid, pid) == -1) {
+            std::cerr << "setpgid() failed\n";
+        }
         timedOut = false;
         currentChildPid = pid;
         signal(SIGALRM, handleAlarm);
