@@ -11,6 +11,9 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <cstring>
+#include <sys/resource.h>
+#include <cerrno>
+#include <cstring>
 
 static pid_t currentChildPid = -1;
 static volatile sig_atomic_t timedOut = 0;
@@ -30,9 +33,9 @@ bool runTarget(const std::string& inputFile) {
 
     std::string targetPath = findTargetBinary();
 
-        if (targetPath.empty()) {
-            std::cerr << "No executable target found!\n";
-            return false;
+    if (targetPath.empty()) {
+        std::cerr << "No executable target found!\n";
+        return false;
         }
     pid_t pid = fork(); //create child process(copy of the program)
     //incase fork fails and child is not created
@@ -42,27 +45,49 @@ bool runTarget(const std::string& inputFile) {
     }
     //if within child process
     if (pid ==0) {
-        //put the current child process into new process group
-        if (setpgid(0, 0) == -1) {
-            _exit(1);
-        }
-
-        if (lmode == LogMode::NORMAL){
-        // silence target output
-        freopen("/dev/null", "w", stdout);
-        freopen("/dev/null", "w", stderr);
-        }
-        //exacl replaces child process with target program (switch to execv?)
-        execl(targetPath.c_str(),
-            targetPath.c_str(),
-            inputFile.c_str(),
-            nullptr);
-        //if exec fails
-        _exit(1);
+        //set up and run the child process
+        child(targetPath, inputFile);
+       _exit(1); // child() should never return
 
     } // for parent process
     else {
-        //ensure that the child has joined the right process group
+        return monitorChild(pid);
+    }
+
+}
+
+
+
+
+void executeChild(
+    const std::string& targetPath,
+    const std::string& inputFile
+) {
+    // Put the child into its own process group
+    if (setpgid(0, 0) == -1) {
+        _exit(1);
+    }
+
+    setResourceLimits();
+
+    if (lmode == LogMode::NORMAL) {
+        freopen("/dev/null", "w", stdout);
+        freopen("/dev/null", "w", stderr);
+    }
+
+    // Replace child with target program
+    execl(targetPath.c_str(),
+          targetPath.c_str(),
+          inputFile.c_str(),
+          nullptr);
+
+    // exec failed
+    _exit(1);
+}
+
+
+bool monitorChild( pid_t pid ){
+    //ensure that the child has joined the right process group
         if (setpgid(pid, pid) == -1) {
             std::cerr << "setpgid() failed\n";
         }
@@ -83,7 +108,7 @@ bool runTarget(const std::string& inputFile) {
             return false; // don't count hangs as crashes
         }
 
-        //debug to see civerage snapshot
+        //debug to see coverage snapshot
         if (lmode == LogMode::DEBUG) {
             std::cout << "Coverage snapshot:\n";
             for (int i = 0; i < MAP_SIZE; i++) {
@@ -112,6 +137,30 @@ bool runTarget(const std::string& inputFile) {
 
         //norml exit
         return false;
+}
+
+
+
+void setResourceLimits() {
+    // Limit CPU time
+    struct rlimit cpuLimit;
+    cpuLimit.rlim_cur = 1; //soft limit
+    cpuLimit.rlim_max = 1; // hard limit
+
+    if (setrlimit(RLIMIT_CPU, &cpuLimit) == -1) {
+    std::cerr << "setrlimit(RLIMIT_CPU) failed: "
+              << std::strerror(errno) << "\n";
+    _exit(1);
     }
 
+    // Limit virtual address space to 256 MiB
+    struct rlimit memoryLimit;
+    memoryLimit.rlim_cur = 256 * 1024 * 1024;
+    memoryLimit.rlim_max = 256 * 1024 * 1024;
+
+    if (setrlimit(RLIMIT_AS, &memoryLimit) == -1) {
+        std::cerr << "setrlimit(RLIMIT_AS) failed: "
+              << std::strerror(errno) << "\n";
+        _exit(1);
+    }
 }
