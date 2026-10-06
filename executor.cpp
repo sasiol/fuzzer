@@ -101,7 +101,9 @@ bool monitorChild( pid_t pid ){
         waitpid(pid, &status, 0); //
 
         alarm(0);  // cancel alarm if target exited normally
+
         currentChildPid = -1;
+
         if (timedOut) {
             if (lmode == LogMode::DEBUG)
                 std::cout << "TIMEOUT — target hung, input skipped\n";
@@ -119,31 +121,40 @@ bool monitorChild( pid_t pid ){
             std::cout << "\n";
         }
 
-         if (signal == SIGXCPU) {
-        if (lmode == LogMode::DEBUG)
-            std::cout << "CPU limit exceeded\n";
+        // Check whether the child was terminated by a signal
+    if (WIFSIGNALED(status)) {
+        int childSignal = WTERMSIG(status);
 
-        return false;
+        //happens when CPU limit reached
+         if (childSignal == SIGXCPU) {
+            if (lmode == LogMode::DEBUG)
+                std::cout << "CPU limit exceeded\n";
+
+             return false;
+        }
+
+
+        //actual crash signals
+        if (childSignal == SIGABRT ||
+            childSignal == SIGSEGV ||
+            childSignal == SIGBUS ||
+            childSignal == SIGFPE) {
+
+            if (lmode == LogMode::DEBUG)
+                std::cout << "CRASH! Signal: " << childSignal << "\n";
+
+            return true;
     }
 
-    if (signal == SIGABRT ||
-        signal == SIGSEGV ||
-        signal == SIGBUS ||
-        signal == SIGFPE) {
-
         if (lmode == LogMode::DEBUG)
-            std::cout << "CRASH! Signal: " << signal << "\n";
-
-        return true;
-    }
-
-    if (lmode == LogMode::DEBUG)
-        std::cout << "Target terminated by signal: "
-                  << signal << "\n";
+            std::cout << "Target terminated by signal: "
+                  << childSignal << "\n";
 
     return false;
 }
+return false;
 }
+
 
 
 
