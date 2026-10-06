@@ -31,15 +31,15 @@ Place one or more seed input files in the `seed/` directory.
 The Dockerfile automatically compiles the target with coverage instrumentation.
 
 
-### Quick build and run
+### Build and run
 ```bash
-docker build -t fuzzer .
-docker run -it --name fuzru fuzzer
+docker compose build
 ```
-If you get a "name already in use" error, remove the old container first: ```bash docker rm fuzru ```
-
-When the fuzzer starts, select the fuzzing mode and logging mode:
-
+Run the fuzzer interactively:
+```bash
+docker compose run --rm fuzzer
+```
+The fuzzer will ask you to select the fuzzing and logging modes:
 ```text
 Select Fuzzing mode:
 1 = random
@@ -52,17 +52,18 @@ Select Logging mode:
 
 ## Crash Output
 
-Crash files are stored inside the container at:
+Crash files are written to:
 
 ```
-/fuzz/crashes
+crashes/
 ```
 
-To retrieve crash files after execution, copy them from the container to your host machine:
+The crashes/ directory is bind-mounted from the host into the container, so crash files remain available on the host after the container exits.
 
-```bash
-docker cp fuzru:/fuzz/crashes ./crashes
-```
+## Stopping the fuzzer
+Press Ctrl+C to stop the fuzzer.
+
+The fuzzer handles SIGINT and performs its cleanup before exiting.
 
 ## Project Structure
 
