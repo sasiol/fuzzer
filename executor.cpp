@@ -46,7 +46,7 @@ bool runTarget(const std::string& inputFile) {
     //if within child process
     if (pid ==0) {
         //set up and run the child process
-        child(targetPath, inputFile);
+        executeChild(targetPath, inputFile);
        _exit(1); // child() should never return
 
     } // for parent process
@@ -119,24 +119,30 @@ bool monitorChild( pid_t pid ){
             std::cout << "\n";
         }
 
-        //WIFSIGNALED return true if the child process was terminated by a signal
-        if (WIFSIGNALED(status)) {
-            int signal = WTERMSIG(status);  //returns number of the signal
+         if (signal == SIGXCPU) {
+        if (lmode == LogMode::DEBUG)
+            std::cout << "CPU limit exceeded\n";
 
-            if (lmode == LogMode::DEBUG) std::cout << "CRASH! Signal: " << signal << "\n";
-
-            if (signal == SIGABRT) {
-               if (lmode == LogMode::DEBUG)  std::cout << "SIGBART detected(abort) \n";
-            }
-
-            if (signal == SIGSEGV) {
-              if (lmode == LogMode::DEBUG)   std::cout << "→ Detected SIGSEGV (segfault)\n";
-            }
-            return true;
-        } //later add more crash signals
-
-        //norml exit
         return false;
+    }
+
+    if (signal == SIGABRT ||
+        signal == SIGSEGV ||
+        signal == SIGBUS ||
+        signal == SIGFPE) {
+
+        if (lmode == LogMode::DEBUG)
+            std::cout << "CRASH! Signal: " << signal << "\n";
+
+        return true;
+    }
+
+    if (lmode == LogMode::DEBUG)
+        std::cout << "Target terminated by signal: "
+                  << signal << "\n";
+
+    return false;
+}
 }
 
 
