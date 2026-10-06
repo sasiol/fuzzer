@@ -17,6 +17,18 @@
 
 static pid_t currentChildPid = -1;
 static volatile sig_atomic_t timedOut = 0;
+
+//forward declarations
+void executeChild(
+    const std::string& targetPath,
+    const std::string& inputFile
+);
+
+bool monitorChild(pid_t pid);
+
+void setResourceLimits();
+
+
 //alarm for if target program gets stuck (kills the child)
 static void handleAlarm(int) {
     timedOut = true;
